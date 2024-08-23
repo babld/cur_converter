@@ -46,17 +46,18 @@ class Cbrf extends ParserAbstract implements ParserInterface
 
     public function makeRequest($date = '')
     {
-        try {
-            $request = $this->client->post($this->url);
-        } catch (\Throwable $exception) {
-            return false;
-        }
+        $date = new \DateTime(date('Y-m-d H:i:s'));
+        $url = $this->url;
 
         if (!empty($date)) {
             $date = new \DateTime($date);
-            $this->url .= '?date_req=' . $date->format('d/m/Y');
-        } else {
-            $date = new \DateTime(date('Y-m-d H:i:s'));
+            $url = $this->url . '?date_req=' . $date->format('d/m/Y');
+        }
+
+        try {
+            $request = $this->client->post($url);
+        } catch (\Throwable $exception) {
+            return false;
         }
 
         $xml = new \SimpleXMLElement($request->getBody()->getContents());
