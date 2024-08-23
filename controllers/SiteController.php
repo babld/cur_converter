@@ -155,11 +155,6 @@ class SiteController extends Controller
         return $this->goHome();
     }
 
-    public function actionTest()
-    {
-        return $this->render('test');
-    }
-
     public function actionStat(): Response|string
     {
         $model = new StatForm();
