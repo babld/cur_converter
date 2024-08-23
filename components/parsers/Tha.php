@@ -6,6 +6,7 @@ use app\components\ParserInterface;
 use app\models\ConverterForm;
 use app\models\Cur;
 use app\models\CurDetail;
+use Psr\Http\Message\ResponseInterface;
 use Yii;
 use yii\helpers\ArrayHelper;
 
@@ -31,9 +32,16 @@ class Tha extends ParserAbstract implements ParserInterface
                 continue;
             }
 
-            $response = $this->makeRequest($cur);
+            $request = $this->makeRequest($cur);
+            /** @var ResponseInterface $request */
+            if ($request->getStatusCode() !== 200) {
+                Yii::$app->getSession()->setFlash('danger', 'ЦБ Таиланда не знает такой валюты');
+                return false;
+            }
 
-            $arr = $response['result']['data']['data_detail'] ?? false;
+            $data = json_decode($request->getBody()->getContents(), true);
+
+            $arr = $data['result']['data']['data_detail'] ?? false;
 
             if (!$arr) {
                 Yii::$app->getSession()->setFlash('danger', 'Сервис временно недоступен, попробуйте позже');
@@ -71,25 +79,35 @@ class Tha extends ParserAbstract implements ParserInterface
         return str_replace('{CUR}', $cur, $result);
     }
 
-    public function makeRequest($cur): array
+    public function makeRequest($cur): ResponseInterface
     {
         return Yii::$app->cache->getOrSet('cur-' . $cur, function() use ($cur) {
-            $request = $this->client->get($this->getUrl($cur), [
-                'headers' => [
-                    'X-IBM-Client-Id' => $this->apiKey,
-                ]
-            ]);
-
-            return json_decode($request->getBody()->getContents(), true);
+            try {
+                return $this->client->get($this->getUrl($cur), [
+                    'headers' => [
+                        'X-IBM-Client-Id' => $this->apiKey,
+                    ]
+                ]);
+            } catch (\GuzzleHttp\Exception\ClientException $exception) {
+                return $exception->getResponse();
+            }
         }, 60 * 60);
     }
 
     public function consoleParse()
     {
         foreach (Cur::getDropdown() as $charCode => $name) {
-            $response = $this->makeRequest($charCode);
+            echo "parse $name ($charCode) \n";
 
-            $arr = $response['result']['data']['data_detail'] ?? false;
+            $request = $this->makeRequest($charCode);
+
+            if ($request->getStatusCode() !== 200) {
+                echo "Invalid currency \n";
+                continue;
+            }
+
+            $data = json_decode($request->getBody()->getContents(), true);
+            $arr = $data['result']['data']['data_detail'] ?? false;
 
             if (!$arr) {
                 return false;
@@ -106,6 +124,7 @@ class Tha extends ParserAbstract implements ParserInterface
                     (new \DateTime($detail['period']))->format('Y-m-d H:i:s'),
                     ArrayHelper::getValue($detail, 'mid_rate')
                 );
+                echo "\t спарсили " . $detail['period'] . "\n";
             }
 
             sleep(5); // В консоли не страшно
