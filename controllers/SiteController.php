@@ -174,7 +174,10 @@ class SiteController extends Controller
                 ->all();
 
             $chartOptions = [
-                'title' => false,
+                'title' => [
+                    'text' => 'Статистика за неделю',
+                    'align' => 'center',
+                ],
                 'yAxis' => [
                     'title' => ['text' => 'RUB'],
                 ],
