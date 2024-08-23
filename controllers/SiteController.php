@@ -160,7 +160,7 @@ class SiteController extends Controller
         return $this->render('test');
     }
 
-    public function actionStat(): Response
+    public function actionStat(): Response|string
     {
         $model = new StatForm();
 
@@ -179,6 +179,7 @@ class SiteController extends Controller
                 ->all();
 
             $chartOptions = [
+                'title' => false,
                 'yAxis' => [
                     'title' => ['text' => 'RUB'],
                 ],
@@ -189,7 +190,7 @@ class SiteController extends Controller
                     [
                         'data' => array_map(fn ($item) => (float) str_replace(',', '.', $item->value), $data),
                         'type' => 'line',
-                        'name' => Cur::findOne(['id' => $model->cur])
+                        'name' => Cur::findOne(['char_code' => $model->cur])->name
                     ]
                 ],
             ];

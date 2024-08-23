@@ -69,7 +69,6 @@ class Cbrf extends ParserAbstract implements ParserInterface
 
     public function consoleParse()
     {
-        var_dump('tut');
         $dateStart = (new \DateTime(date('Y-m-d')))->modify('-1 week');
         $dateEnd = (new \DateTime(date('Y-m-d')));
 
@@ -77,14 +76,10 @@ class Cbrf extends ParserAbstract implements ParserInterface
 
         $datePeriod = new \DatePeriod($dateStart, $dateInterval, $dateEnd);
 
-        var_dump($dateStart, $dateEnd);
         foreach ($datePeriod as $date) {
-            var_dump($date, 'parse');
             /** @var \DateTime $date */
             $this->makeRequest($date->format('Y-m-d H:i:s'));
             sleep(5);
         }
-
-        var_dump('ok');
     }
 }

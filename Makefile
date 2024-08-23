@@ -21,15 +21,17 @@ initialize: ## создать базу, накатить миграции
 	echo "flush privileges" | docker compose exec -T mysql mysql -uroot -pverysecret
 	docker compose run --rm php composer install
 	docker compose run --rm php /app/yii migrate --interactive=0
+	echo "apt-get update" | docker compose exec -T php bash
+	echo "apt-get -y upgrade" | docker compose exec -T php bash
+	echo "apt-get -y install cron" | docker compose exec -T php bash
+	echo "apt-get -y install vim" | docker compose exec -T php bash
+	echo "crontab /app/crontab.task" | docker compose exec -T php bash
 
 composer_install: ## установить зависимости composer
 	docker compose run --rm php composer install
 
 composer_update: ## обновить зависимости composer
 	docker compose run --rm php composer update
-
-cron_install: ## обновить зависимости composer
-	docker compose run --rm php apt install cron
 
 help:
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-16s\033[0m %s\n", $$1, $$2}'
