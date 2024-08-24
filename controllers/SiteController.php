@@ -9,6 +9,7 @@ use app\models\CurDetail;
 use app\models\StatForm;
 use Yii;
 use yii\filters\AccessControl;
+use yii\helpers\ArrayHelper;
 use yii\web\Controller;
 use yii\web\Response;
 use GuzzleHttp\Client;
@@ -193,5 +194,19 @@ class SiteController extends Controller
             'model' => $model,
             'chartOptions' => ''
         ]);
+    }
+
+    public function actionGetCurByParser()
+    {
+        $model = new StatForm();
+        $model->load(Yii::$app->request->post());
+
+        $result = '';
+
+        foreach (Cur::findAll(['parser' => $model->parser]) as $key => $value) {
+            $result .= '<option value="' . $value->char_code . '">' . $value->name . '</option>';
+        }
+
+        return $result;
     }
 }

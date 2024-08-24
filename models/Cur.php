@@ -34,8 +34,8 @@ class Cur extends ActiveRecord
         return 'cur';
     }
 
-    public static function getDropdown(): array
+    public static function getDropdown($parser = 1): array
     {
-        return ArrayHelper::map(self::find()->where(['parser' => 1])->all(), 'char_code', 'name');
+        return ArrayHelper::map(self::find()->where(['parser' => $parser])->all(), 'char_code', 'name');
     }
 }

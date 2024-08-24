@@ -25,8 +25,8 @@ class StatForm extends Model
     public function attributeLabels()
     {
         return [
-            'cur' => 'Валюта',
-            'parser' => 'Парсер',
+            'cur' => 'Выберите валюту',
+            'parser' => 'Выберите источник',
         ];
     }
 
