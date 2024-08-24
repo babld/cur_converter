@@ -81,7 +81,6 @@ class SiteController extends Controller
         $model = new ConverterForm();
 
         if ($model->load(Yii::$app->request->post())) {
-
             /** @var ParserAbstract $parser */
             $parser = Yii::$container->get(Yii::$app->params['curParser'][$model->parser]['class']);
 
@@ -159,7 +158,7 @@ class SiteController extends Controller
                 ->leftJoin('cur', 'cur.id = cur_detail.cur_id')
                 ->where([
                     'char_code' => $model->cur,
-                    'parser' => 1,
+                    'parser' => $model->parser,
                 ])
                 ->andWhere('datetime between :d1 and :d2', [
                     'd1' => (new \DateTime(date('Y-m-d')))->modify('-1 week')->format('Y-m-d 00:00:00'),

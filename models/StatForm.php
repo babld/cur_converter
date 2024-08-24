@@ -3,6 +3,8 @@
 namespace app\models;
 
 use yii\base\Model;
+use yii\helpers\ArrayHelper;
+use Yii;
 
 /**
  * @property int $curId
@@ -26,5 +28,14 @@ class StatForm extends Model
             'cur' => 'Валюта',
             'parser' => 'Парсер',
         ];
+    }
+
+    public function parserDropdown(): array
+    {
+        return ArrayHelper::map(
+            Yii::$app->params['curParser'],
+            fn ($item) => $item['id'],
+            fn ($item) => (Yii::$container->get($item['class']))->getTitle()
+        );
     }
 }

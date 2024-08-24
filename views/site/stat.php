@@ -24,6 +24,12 @@ use yii\helpers\Html;
         </div>
     </div>
 
+    <div class="row">
+        <div class="col-sm-5">
+            <?= $form->field($model, 'parser')->dropDownList($model->parserDropdown())?>
+        </div>
+    </div>
+
     <?= Html::submitButton('Показать статистику', ['class' => 'btn btn-primary']) ?>
 
     <?php ActiveForm::end() ?>
