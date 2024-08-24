@@ -4,14 +4,13 @@ namespace app\components\parsers;
 
 use app\components\ParserInterface;
 use app\models\ConverterForm;
-use app\models\Cur;
 use Psr\Http\Message\ResponseInterface;
 use Yii;
 use yii\helpers\ArrayHelper;
 
 class Tha extends ParserAbstract implements ParserInterface
 {
-    public string $urlTpl = 'https://apigw1.bot.or.th/bot/public/Stat-ExchangeRate/v2/DAILY_AVG_EXG_RATE/?start_period={START_PERIOD}&end_period={END_PERIOD}&currency={CUR}';
+    public string $urlTpl = 'https://apigw1.bot.or.th/bot/public/Stat-ExchangeRate/v2/DAILY_AVG_EXG_RATE/?start_period={START_PERIOD}&end_period={END_PERIOD}';
     protected string $title = 'ЦБ Тайланда';
     protected string $apiKey = 'c2bbe063-d0ff-456c-bc08-fbd5115fb340';
     const PARSER_ID = 2;
@@ -28,7 +27,7 @@ class Tha extends ParserAbstract implements ParserInterface
                 continue;
             }
 
-            $request = $this->makeRequest($cur);
+            $request = $this->makeRequest();
             /** @var ResponseInterface $request */
             if ($request->getStatusCode() !== 200) {
                 Yii::$app->getSession()->setFlash('danger', 'ЦБ Таиланда не знает такой валюты');
@@ -66,20 +65,18 @@ class Tha extends ParserAbstract implements ParserInterface
         return $result;
     }
 
-    protected function getUrl($cur): string
+    protected function getUrl(): string
     {
         $result = str_replace('{START_PERIOD}', date('Y-m-d', strtotime('-1 month')), $this->urlTpl);
 
-        $result = str_replace('{END_PERIOD}', date('Y-m-d'), $result);
-
-        return str_replace('{CUR}', $cur, $result);
+        return str_replace('{END_PERIOD}', date('Y-m-d'), $result);
     }
 
-    public function makeRequest($cur): ResponseInterface
+    public function makeRequest(): ResponseInterface
     {
-        return Yii::$app->cache->getOrSet('cur-' . $cur, function() use ($cur) {
+        return Yii::$app->cache->getOrSet('cur', function() {
             try {
-                return $this->client->get($this->getUrl($cur), [
+                return $this->client->get($this->getUrl(), [
                     'headers' => [
                         'X-IBM-Client-Id' => $this->apiKey,
                     ]
@@ -87,43 +84,35 @@ class Tha extends ParserAbstract implements ParserInterface
             } catch (\GuzzleHttp\Exception\ClientException $exception) {
                 return $exception->getResponse();
             }
-        }, 60 * 60);
+        }, 1);
     }
 
-    public function consoleParse()
+    public function consoleParse(): void
     {
         echo "Parse CB THA \n";
-        foreach (Cur::getDropdown() as $charCode => $name) {
-            echo "parse $name ($charCode) \n";
 
-            $request = $this->makeRequest($charCode);
+        $request = $this->makeRequest();
 
-            if ($request->getStatusCode() !== 200) {
-                echo "Invalid currency \n";
-                continue;
-            }
+        if ($request->getStatusCode() !== 200) {
+            echo "Request error \n";
+            return;
+        }
 
-            $data = json_decode($request->getBody()->getContents(), true);
-            $arr = $data['result']['data']['data_detail'] ?? false;
+        $data = json_decode($request->getBody()->getContents(), true);
+        $arr = $data['result']['data']['data_detail'] ?? false;
 
-            if (!$arr) {
-                return false;
-            }
+        if (!$arr) {
+            return;
+        }
 
-            $curModel = null;
-            foreach ($arr as $detail) {
-                if (!$curModel) {
-                    $curModel = $this->findOrCreateCur($charCode, self::PARSER_ID, ArrayHelper::getValue($detail, 'currency_name_eng'));
-                }
+        foreach ($arr as $detail) {
+            $curModel = $this->findOrCreateCur(ArrayHelper::getValue($detail, 'currency_id'), self::PARSER_ID, ArrayHelper::getValue($detail, 'currency_name_eng'));
 
-                $this->findOrCreateCurDetail(
-                    $curModel->id,
-                    (new \DateTime($detail['period']))->format('Y-m-d H:i:s'),
-                    ArrayHelper::getValue($detail, 'mid_rate')
-                );
-            }
-
-            sleep(5); // В консоли не страшно
+            $this->findOrCreateCurDetail(
+                $curModel->id,
+                (new \DateTime($detail['period']))->format('Y-m-d H:i:s'),
+                ArrayHelper::getValue($detail, 'mid_rate')
+            );
         }
     }
 }
