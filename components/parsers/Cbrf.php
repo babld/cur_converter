@@ -4,7 +4,6 @@ namespace app\components\parsers;
 
 use app\components\ParserInterface;
 use app\models\ConverterForm;
-use app\models\CurDetail;
 use yii\helpers\ArrayHelper;
 use Yii;
 
@@ -19,7 +18,7 @@ class Cbrf extends ParserAbstract implements ParserInterface
         $result = [];
         foreach ([$model->curFromId, $model->curToId] as $cur) {
             if ($cur === 'RUB') {
-                $result[] = new CurDetail(['value' => 1]);
+                $result[] = 1;
                 continue;
             }
 
@@ -38,7 +37,7 @@ class Cbrf extends ParserAbstract implements ParserInterface
                 return false;
             }
 
-            $result[] = $this->findCurDetail($curModel->id, date('Y-m-d H:i:s'));
+            $result[] = $this->findCurDetail($curModel->id, date('Y-m-d H:i:s'))->value;
         }
 
         return $result;

@@ -98,11 +98,7 @@ class SiteController extends Controller
                 ]);
             }
 
-            /** @var CurDetail $curDetailFrom */
-            /** @var CurDetail $curDetailTo */
-            list($curDetailFrom, $curDetailTo) = $result;
-
-            $koef = $this->getValue($curDetailFrom->value) / $this->getValue($curDetailTo->value);
+            $koef = $this->getValue($result[0]) / $this->getValue($result[1]);
 
             $model->to = number_format($koef * (float) $model->from, 2, '.', ' ');
         }

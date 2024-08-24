@@ -5,7 +5,6 @@ namespace app\components\parsers;
 use app\components\ParserInterface;
 use app\models\ConverterForm;
 use app\models\Cur;
-use app\models\CurDetail;
 use Psr\Http\Message\ResponseInterface;
 use Yii;
 use yii\helpers\ArrayHelper;
@@ -25,10 +24,7 @@ class Tha extends ParserAbstract implements ParserInterface
         $result = [];
         foreach ([$model->curFromId, $model->curToId] as $cur) {
             if ($cur === 'THB') {
-//                $curModel = $this->findOrCreateCur($cur, 2, 'Таиландских батов');
-//                $curDetail = $this->findOrCreateCurDetail($curModel->id, date('Y-m-d H:i:s'), 1);
-//                $result[] = $curDetail;
-                $result[] = new CurDetail(['value' => 1]);
+                $result[] = 1;
                 continue;
             }
 
@@ -61,7 +57,7 @@ class Tha extends ParserAbstract implements ParserInterface
                     ArrayHelper::getValue($detail, 'mid_rate')
                 );
                 if ($first) {
-                    $result[] = $curDetail;
+                    $result[] = $curDetail->value;
                     $first = false;
                 }
             }
