@@ -36,7 +36,7 @@ class SiteController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::class,
-                'only' => ['logout'],
+                'only' => ['logout', 'stat', 'index'],
                 'rules' => [
                     [
                         'actions' => ['logout', 'index', 'stat'],
@@ -78,11 +78,6 @@ class SiteController extends Controller
      */
     public function actionIndex()
     {
-        if (yii::$app->user->isGuest) {
-            Yii::$app->getSession()->setFlash('danger', 'Для конвертации валют, необходима авторизация');
-            return $this->redirect('/site/login');
-        }
-
         $model = new ConverterForm();
 
         if ($model->load(Yii::$app->request->post())) {
