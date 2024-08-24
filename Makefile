@@ -26,6 +26,8 @@ initialize: ## создать базу, накатить миграции
 	echo "apt-get -y install cron" | docker compose exec -T php bash
 	echo "apt-get -y install vim" | docker compose exec -T php bash
 	echo "crontab /app/crontab.task" | docker compose exec -T php bash
+	echo "php /app/yii cur" | docker compose exec -T php bash
+	echo "php /app/yii cur th" | docker compose exec -T php bash
 
 composer_install: ## установить зависимости composer
 	docker compose run --rm php composer install

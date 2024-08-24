@@ -1,4 +1,4 @@
 # Выполнять задание раз в час в 0 минут
-0 * * * * /app/yii cur
-30 * * * * /app/yii cur th
+0 * * * * /app/yii cur >/dev/null
+30 * * * * /app/yii cur th >/dev/null
 

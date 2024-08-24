@@ -46,12 +46,12 @@ class Cbrf extends ParserAbstract implements ParserInterface
 
     public function makeRequest($date = '')
     {
-        $date = new \DateTime(date('Y-m-d H:i:s'));
-        $url = $this->url;
-
         if (!empty($date)) {
             $date = new \DateTime($date);
             $url = $this->url . '?date_req=' . $date->format('d/m/Y');
+        } else {
+            $date = new \DateTime(date('Y-m-d H:i:s'));
+            $url = $this->url;
         }
 
         try {
@@ -78,6 +78,7 @@ class Cbrf extends ParserAbstract implements ParserInterface
         $datePeriod = new \DatePeriod($dateStart, $dateInterval, $dateEnd);
 
         foreach ($datePeriod as $date) {
+            echo 'Parse CBRF for date: ' . $date->format('Y-m-d') . "\n";
             /** @var \DateTime $date */
             $this->makeRequest($date->format('Y-m-d H:i:s'));
             sleep(5);

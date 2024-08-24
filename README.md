@@ -27,3 +27,8 @@ make initialize
 
 #### Запускается раз в час - Парсинг ЦБ Таиланда
 30 * * * * /app/yii cur th
+
+## Данные для авторизации в сервисе
+login : demo
+
+password: demo
