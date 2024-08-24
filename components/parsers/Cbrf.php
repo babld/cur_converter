@@ -76,9 +76,9 @@ class Cbrf extends ParserAbstract implements ParserInterface
         $dateInterval = new \DateInterval('P1D');
 
         $datePeriod = new \DatePeriod($dateStart, $dateInterval, $dateEnd);
-
+        echo "Parse CBRF \n";
         foreach ($datePeriod as $date) {
-            echo 'Parse CBRF for date: ' . $date->format('Y-m-d') . "\n";
+            echo 'Date: ' . $date->format('Y-m-d') . "\n";
             /** @var \DateTime $date */
             $this->makeRequest($date->format('Y-m-d H:i:s'));
             sleep(5);

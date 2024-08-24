@@ -96,6 +96,7 @@ class Tha extends ParserAbstract implements ParserInterface
 
     public function consoleParse()
     {
+        echo "Parse CB THA \n";
         foreach (Cur::getDropdown() as $charCode => $name) {
             echo "parse $name ($charCode) \n";
 
@@ -124,7 +125,6 @@ class Tha extends ParserAbstract implements ParserInterface
                     (new \DateTime($detail['period']))->format('Y-m-d H:i:s'),
                     ArrayHelper::getValue($detail, 'mid_rate')
                 );
-                echo "\t спарсили " . $detail['period'] . "\n";
             }
 
             sleep(5); // В консоли не страшно
