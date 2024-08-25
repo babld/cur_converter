@@ -19,25 +19,19 @@ class ConverterForm extends Model
     public string $to = '';
     public $curFromId;
     public $curToId;
-    public string $parser = '';
+    public $parser;
 
     public function init()
     {
         parent::init();
     }
 
-    public function setParser()
-    {
-        var_dump('test');exit;
-    }
-
     public function rules(): array
     {
         return [
-            [['from', 'curFromId', 'curToId', /*'parser'*/], 'required'],
+            [['from', 'curFromId', 'curToId'], 'required'],
             [['from'], 'number'],
             ['parser', 'string'],
-            // [['curFromId', 'curToId'], 'each', 'rule' => ['exist', 'targetAttribute' => 'id', 'targetClass' => Cur::class]],
         ];
     }
 

@@ -196,17 +196,31 @@ class SiteController extends Controller
         ]);
     }
 
-    public function actionGetCurByParser()
+    public function actionGetCurByStat()
     {
         $model = new StatForm();
         $model->load(Yii::$app->request->post());
 
+        return $this->getDropdown($model->parser);
+    }
+
+    public function actionGetCurByConverter()
+    {
+        $model = new ConverterForm();
+        $model->load(Yii::$app->request->post());
+
+        return $this->getDropdown((Yii::$container->get(Yii::$app->params['curParser'][$model->parser]['class']))::PARSER_ID);
+    }
+
+    public function getDropdown($parserId)
+    {
         $result = '';
 
-        foreach (Cur::findAll(['parser' => $model->parser]) as $key => $value) {
+        foreach (Cur::findAll(['parser' => $parserId]) as $value) {
             $result .= '<option value="' . $value->char_code . '">' . $value->name . '</option>';
         }
 
         return $result;
     }
+
 }

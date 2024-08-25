@@ -24,13 +24,13 @@ use yii\helpers\Url;
 
     <div class="row">
         <div class="col-sm-5">
-            <?= $form->field($model, 'cur')->dropDownList(Cur::getDropdown($model->parser))?>
+            <?= $form->field($model, 'cur')->dropDownList(Cur::getDropdown($model->parser ?? 1), ['class' => 'cur-select'])?>
         </div>
     </div>
 
     <div class="row">
         <div class="col-sm-5">
-            <?= $form->field($model, 'parser')->dropDownList($model->parserDropdown())?>
+            <?= $form->field($model, 'parser')->dropDownList($model->parserDropdown(), ['class' => 'ajax-parser-load'])?>
         </div>
     </div>
 
@@ -45,12 +45,12 @@ use yii\helpers\Url;
 <?php endif ?>
 
 <?php
-$url = Url::to(['/site/get-cur-by-parser']);
+$url = Url::to(['/site/get-cur-by-stat']);
 
 $this->registerJs(<<<JS
-    $('#statform-parser').change(function() {
+    $('.ajax-parser-load').change(function() {
         $.post('$url', $('form.form').serialize(), function (response) {
-            $('#statform-cur').empty().append(response);
+            $('.cur-select').empty().append(response);
         });
     });
 JS)?>
