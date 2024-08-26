@@ -84,7 +84,7 @@ class Tha extends ParserAbstract implements ParserInterface
             } catch (\GuzzleHttp\Exception\ClientException $exception) {
                 return $exception->getResponse();
             }
-        }, 1);
+        }, 60 * 60); // Кешируем на час
     }
 
     public function consoleParse(): void
