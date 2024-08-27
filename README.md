@@ -28,6 +28,14 @@ make initialize
 
 ./yii /app/cur th - Запустит парсинг ЦБ Таиланда
 
+### Не заходя в докер
+
+#### Запуск парсинга ЦБ РФ
+echo "php /app/yii cur" | docker compose exec -T php bash
+
+#### Запуск парсинга ЦБ Таиланда
+echo "php /app/yii cur th" | docker compose exec -T php bash
+
 ### Crontab
 #### Запускается раз в час - Парсинг ЦБ РФ
 0 * * * * /app/yii cur >/dev/null
